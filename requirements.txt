@@ -1,7 +1,5 @@
 pip==19.2.3
-zlib==1.2.11
 wheel==0.29.0
-openssl==1.1.1d
 cryptography==2.8
 py==1.4.34
 lxml==3.8.0

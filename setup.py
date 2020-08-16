@@ -1,6 +1,6 @@
-from setuptools import find_packages, setup
+from setuptools import setup, find_packages
 
-NAME = "parkig_lot"
+NAME = "parking_lot"
 VERSION = "1.0.0"
 AUTHOR = "Kuntal Chandra"
 EMAIL = "chandra.kuntal@gmail.com"
@@ -9,7 +9,6 @@ URL = ""
 REQUIRES_PYTHON = "3.6"
 
 INSTALL_REQUIRES = [str(ir) for ir in open("requirements.txt")]
-
 TESTS_REQUIRE = ["nose"]
 
 setup(
@@ -19,8 +18,5 @@ setup(
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
     tests_require=TESTS_REQUIRE,
-    entry_points="""
-        [console_scripts]
-        parking_lot=parking_lot:parking_lot
-    """,
+    scripts=["bin/parking_lot"],
 )

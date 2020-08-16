@@ -1,7 +1,6 @@
-# Add script to:
-# * Install dependencies
-# * Build/Compile
-# * Run Test Suit to validate
-#
-# After this is run, bin/parking_lot
-# should Just Work.
+#!/usr/bin/env bash
+
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+# TODO: add tests
+python3 $DIR/../setup.py install
