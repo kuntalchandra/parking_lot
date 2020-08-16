@@ -1,4 +1,5 @@
 import click
+import os
 
 from parking_lot.services.parking_lot import ParkingLotService
 from parking_lot.exceptions import InvalidCommandException
@@ -17,10 +18,31 @@ commands = (
 @click.argument("input_file", type=str, required=False)
 def parking_lot(input_file: str) -> None:
     parking_lot_service = ParkingLotService()
-    # TODO: Do one thing
     if input_file:
-        # Get the parser action
-        pass
+        process_file(parking_lot_service, input_file)
+    else:
+        process_input(parking_lot_service)
+
+
+def process_file(parking_lot_service: ParkingLotService, input_file: str) -> None:
+    if not os.path.exists(input_file):
+        print("File {} doesn't exists".format(input_file))
+    file_obj = open(input_file)
+    try:
+        while True:
+            line = file_obj.readline()
+            if line.endswith("\n"):
+                line = line[:-1]
+            if not line.isalnum():
+                continue
+            decide_action(parking_lot_service, line)
+    except StopIteration:
+        file_obj.close()
+    except Exception as ex:
+        print("Error: {}. Couldn't processing file {}".format(ex, input_file))
+
+
+def process_input(parking_lot_service: ParkingLotService) -> None:
     try:
         while True:
             line = input("$ ")
@@ -30,7 +52,7 @@ def parking_lot(input_file: str) -> None:
     except (KeyboardInterrupt, SystemExit):
         return
     except Exception as ex:
-        print("Invalid command {}".format(ex))
+        print("Error: {}. Couldn't process command {}".format(ex, line))
 
 
 def decide_action(parking_lot_service: ParkingLotService, line: str) -> None:
