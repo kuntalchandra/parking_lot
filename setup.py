@@ -18,5 +18,5 @@ setup(
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
     tests_require=TESTS_REQUIRE,
-    scripts=["bin/parking_lot"],
+    entry_points={"console_scripts": ["parking_lot=parking_lot.cli:parking_lot"]},
 )

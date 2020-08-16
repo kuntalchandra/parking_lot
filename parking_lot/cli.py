@@ -1,36 +1,46 @@
 import click
 
+from parking_lot.services.parking_lot import ParkingLotService
+from parking_lot.exceptions import InvalidCommandException
+
+commands = (
+    "create_parking_lot",
+    "park",
+    "leave",
+    "status",
+    "slot_numbers_for_cars_with_colour",
+    "slot_number_for_registration_number",
+)
+
 
 @click.command()
 @click.argument("input_file", type=str, required=False)
 def parking_lot(input_file: str) -> None:
-    # Get commands
-    print("Init", input_file)
-    pass
+    parking_lot_service = ParkingLotService()
+    # TODO: Do one thing
+    if input_file:
+        # Get the parser action
+        pass
+    try:
+        while True:
+            line = input("$ ")
+            if line == "exit":
+                exit(0)
+            decide_action(parking_lot_service, line)
+    except (KeyboardInterrupt, SystemExit):
+        return
+    except Exception as ex:
+        print("Invalid command {}".format(ex))
 
 
-@click.command(name="create_parking_lot")
-@click.argument("slots", type=int)
-def create_parking_lot(slots: int) -> None:
-    print("Created a parking lot with f{slots} slots")
-
-
-@click.command(name="park")
-@click.argument("registration_number", type=str)
-@click.argument("color", type=str)
-def park(registration_number: str, color: str) -> None:
-    print("Allocated slot number: f{slot}")
-
-
-@click.command(name="leave")
-@click.argument("slot", type=int)
-def leave(slot: int) -> None:
-    print("Slot number f{slot} is free")
-
-
-@click.command(name="status")
-def status() -> None:
-    print("Slot No. Registration No Colour")
+def decide_action(parking_lot_service: ParkingLotService, line: str) -> None:
+    line = line.split()
+    command = line[0]
+    if command not in commands:
+        raise InvalidCommandException(command)
+    params = line[1:]
+    command_function = getattr(parking_lot_service, command)
+    command_function(*params)
 
 
 if __name__ == "__main__":

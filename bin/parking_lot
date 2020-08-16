@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-python3 $DIR/../parking_lot/cli.py $1
-
+# python3 $DIR/../parking_lot/cli.py $1
+python3 -m parking_lot/cli $1
