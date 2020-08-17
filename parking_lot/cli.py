@@ -1,3 +1,5 @@
+import sys
+
 import click
 import os
 
@@ -11,6 +13,7 @@ commands = (
     "status",
     "slot_numbers_for_cars_with_colour",
     "slot_number_for_registration_number",
+    "registration_numbers_for_cars_with_colour",
 )
 
 
@@ -26,20 +29,11 @@ def parking_lot(input_file: str) -> None:
 
 def process_file(parking_lot_service: ParkingLotService, input_file: str) -> None:
     if not os.path.exists(input_file):
-        print("File {} doesn't exists".format(input_file))
-    file_obj = open(input_file)
-    try:
-        while True:
-            line = file_obj.readline()
-            if line.endswith("\n"):
-                line = line[:-1]
-            if not line.isalnum():
-                continue
+        raise FileNotFoundError(input_file)
+    with open(input_file) as fp:
+        lines = fp.readlines()
+        for line in lines:
             decide_action(parking_lot_service, line)
-    except StopIteration:
-        file_obj.close()
-    except Exception as ex:
-        print("Error: {}. Couldn't processing file {}".format(ex, input_file))
 
 
 def process_input(parking_lot_service: ParkingLotService) -> None:
@@ -56,7 +50,7 @@ def process_input(parking_lot_service: ParkingLotService) -> None:
 
 
 def decide_action(parking_lot_service: ParkingLotService, line: str) -> None:
-    line = line.split()
+    line = line.strip().split()
     command = line[0]
     if command not in commands:
         raise InvalidCommandException(command)
