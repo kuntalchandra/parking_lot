@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from parking_lot.entities.car import Car
 from parking_lot.exceptions import ParkingLotExistsException, InvalidCommandException
 from parking_lot.entities.parking_slot import ParkingSlot
@@ -6,7 +5,7 @@ from parking_lot.entities.parking_slot import ParkingSlot
 
 class ParkingLotService:
     def __init__(self):
-        self.slots = OrderedDict()
+        self.slots = {}
 
     def create_parking_lot(self, slots: str) -> None:
         slots = int(slots)
