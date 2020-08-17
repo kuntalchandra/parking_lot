@@ -87,7 +87,7 @@ class ParkingLotService:
         for slot, details in self.slots.items():
             if (
                 not details.available
-                and details.car.get_registration_number == registration_number
+                and details.car.get_registration_number() == registration_number
             ):
                 print(slot)
                 return
