@@ -60,7 +60,14 @@ class ParkingLotService:
     def slot_numbers_for_cars_with_colour(self, color: str) -> None:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
-        pass
+        cars =[]
+        for slot in self.slots.values():
+            if slot.car.get_color() == color:
+                cars.append(slot.car.get_registration_number())
+        if cars:
+            print(", ".join(registration_number for registration_number in cars))
+            return
+        print("Not found")
 
     def slot_number_for_registration_number(self, registration_number: str) -> None:
         if not self.slots:
