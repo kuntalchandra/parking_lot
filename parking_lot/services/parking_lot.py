@@ -50,12 +50,19 @@ class ParkingLotService:
     def status(self) -> List[str]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
-        cars = ["Slot No. Registration No Colour"]
+        print("Slot No. Registration No Colour")
+        cars = []
         for slot, details in self.slots.items():
             if not details.available:
-                cars.append([slot, details.car.get_registration_number(), details.car.get_color()])
+                cars.append(
+                    [
+                        str(slot),
+                        details.car.get_registration_number(),
+                        details.car.get_color(),
+                    ]
+                )
         for car in cars:
-            print(car)
+            print(", ".join(car))
         return cars
 
     def registration_numbers_for_cars_with_colour(self, color: str) -> None:
