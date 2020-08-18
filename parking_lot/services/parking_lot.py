@@ -47,7 +47,7 @@ class ParkingLotService:
         print("Slot number {} is free".format(slot))
         return slot
 
-    def status(self) -> List[str]:
+    def status(self) -> List[List[str]]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         print("Slot No. Registration No Colour")
@@ -65,31 +65,37 @@ class ParkingLotService:
             print(", ".join(car))
         return cars
 
-    def registration_numbers_for_cars_with_colour(self, color: str) -> None:
+    def registration_numbers_for_cars_with_colour(
+        self, color: str
+    ) -> [List[str], bool]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         cars = []
         for slot in self.slots.values():
-            if slot.car.get_color() == color:
+            if not slot.available and slot.car.get_color() == color:
                 cars.append(slot.car.get_registration_number())
         if cars:
             print(", ".join(registration_number for registration_number in cars))
-            return
+            return cars
         print("Not found")
+        return False
 
-    def slot_numbers_for_cars_with_colour(self, color: str) -> None:
+    def slot_numbers_for_cars_with_colour(self, color: str) -> [List[int], bool]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         slots = []
         for slot, details in self.slots.items():
-            if details.car.get_color() == color:
+            if not details.available and details.car.get_color() == color:
                 slots.append(slot)
         if slots:
             print(", ".join(str(slot) for slot in slots))
-            return
+            return slots
         print("Not found")
+        return False
 
-    def slot_number_for_registration_number(self, registration_number: str) -> None:
+    def slot_number_for_registration_number(
+        self, registration_number: str
+    ) -> [int, bool]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         for slot, details in self.slots.items():
@@ -98,5 +104,6 @@ class ParkingLotService:
                 and details.car.get_registration_number() == registration_number
             ):
                 print(slot)
-                return
+                return slot
         print("Not found")
+        return False

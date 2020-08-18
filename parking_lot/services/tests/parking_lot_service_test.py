@@ -1,7 +1,6 @@
 from unittest import TestCase
 from parking_lot.exceptions import InvalidCommandException
 from parking_lot.services.parking_lot import ParkingLotService
-from parking_lot.services.tests.fixtures import cars
 
 
 class ParkingLotServiceTest(TestCase):
@@ -56,14 +55,43 @@ class ParkingLotServiceTest(TestCase):
             print(e)
 
     def test_status(self):
-        cars = [
-            ["1", "KA-01-HH-1234", "White"],
-            ["2", "KA-01-HH-9999", "White"],
-            ["3", "KA-01-BB-0001", "Black"],
-        ]
         obj = ParkingLotService()
         obj.create_parking_lot(str(self.slots))
         for details in self.cars:
             registration_number, color = details
             obj.park(registration_number, color)
-        self.assertListEqual(cars, obj.status())
+        self.assertListEqual(
+            [
+                ["1", "KA-01-HH-1234", "White"],
+                ["2", "KA-01-HH-9999", "White"],
+                ["3", "KA-01-BB-0001", "Black"],
+            ],
+            obj.status(),
+        )
+
+    def test_registration_numbers_for_cars_with_colour(self):
+        obj = ParkingLotService()
+        obj.create_parking_lot(str(self.slots))
+        for details in self.cars:
+            registration_number, color = details
+            obj.park(registration_number, color)
+        self.assertListEqual(
+            ["KA-01-HH-1234", "KA-01-HH-9999"],
+            obj.registration_numbers_for_cars_with_colour("White"),
+        )
+
+    def test_slot_numbers_for_cars_with_colour(self):
+        obj = ParkingLotService()
+        obj.create_parking_lot(str(self.slots))
+        for details in self.cars:
+            registration_number, color = details
+            obj.park(registration_number, color)
+        self.assertListEqual([1, 2], obj.slot_numbers_for_cars_with_colour("White"))
+
+    def test_slot_number_for_registration_number(self):
+        obj = ParkingLotService()
+        obj.create_parking_lot(str(self.slots))
+        obj.park("park KA-01-HH-1234", "White")
+        self.assertEqual(
+            1, obj.slot_number_for_registration_number("park KA-01-HH-1234")
+        )
