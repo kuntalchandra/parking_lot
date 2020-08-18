@@ -15,6 +15,7 @@ class ParkingLotFileInputTest(TestCase):
         original_stdout = sys.stdout
         input_path = getcwd() + self.input_file
         output_path = getcwd() + self.output_file
+
         with open(output_path) as fp:
             output = fp.readlines()  # Output fixture
 
@@ -26,4 +27,5 @@ class ParkingLotFileInputTest(TestCase):
 
         with open(self.stdout_file) as fp:
             std_out = fp.readlines()
-            self.assertListEqual(std_out, output)
+
+        self.assertListEqual(std_out, output)
