@@ -56,7 +56,11 @@ class ParkingLotServiceTest(TestCase):
             print(e)
 
     def test_status(self):
-        cars = [["1", "KA-01-HH-1234", "White"], ["2", "KA-01-HH-9999", "White"], ["3", "KA-01-BB-0001", "Black"]]
+        cars = [
+            ["1", "KA-01-HH-1234", "White"],
+            ["2", "KA-01-HH-9999", "White"],
+            ["3", "KA-01-BB-0001", "Black"],
+        ]
         obj = ParkingLotService()
         obj.create_parking_lot(str(self.slots))
         for details in self.cars:
