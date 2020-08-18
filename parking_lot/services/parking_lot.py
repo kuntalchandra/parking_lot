@@ -7,18 +7,19 @@ class ParkingLotService:
     def __init__(self):
         self.slots = {}
 
-    def create_parking_lot(self, slots: str) -> None:
+    def create_parking_lot(self, slots: str) -> int:
         slots = int(slots)
         if self.slots:
             raise ParkingLotExistsException("Parking lot already exists")
         for i in range(1, slots + 1):
             self.slots[i] = ParkingSlot(available=True)
         print("Created a parking lot with {} slots".format(slots))
+        return len(self.slots)
 
     def parking_lot_exists(self):
         return self.slots
 
-    def park(self, registration_number: str, color: str):
+    def park(self, registration_number: str, color: str) -> [int, bool]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         for slot_number, parking_slot in self.slots.items():
@@ -27,10 +28,11 @@ class ParkingLotService:
                 parking_slot.available = False
                 self.slots[slot_number] = parking_slot
                 print("Allocated slot number: {}".format(slot_number))
-                return
+                return slot_number
         print("Sorry, parking lot is full")
+        return False
 
-    def leave(self, slot: str):
+    def leave(self, slot: str) -> int:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         slot = int(slot)
@@ -41,20 +43,15 @@ class ParkingLotService:
         self.slots[slot].car = None
         self.slots[slot].available = True
         print("Slot number {} is free".format(slot))
+        return slot
 
     def status(self) -> None:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
-        print("Slot No.     Registration No     Colour")
+        print("Slot No. Registration No Colour")
         for slot, details in self.slots.items():
             if not details.available:
-                print(
-                    "{}       {}      {}".format(
-                        slot,
-                        details.car.get_registration_number(),
-                        details.car.get_color(),
-                    )
-                )
+                print("{} {} {}".format(slot, details.car.get_registration_number(), details.car.get_color()))
 
     def registration_numbers_for_cars_with_colour(self, color: str) -> None:
         if not self.slots:

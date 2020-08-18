@@ -1,8 +1,5 @@
-import sys
-
 import click
-import os
-
+from os import path
 from parking_lot.services.parking_lot import ParkingLotService
 from parking_lot.exceptions import InvalidCommandException
 
@@ -28,7 +25,7 @@ def parking_lot(input_file: str) -> None:
 
 
 def process_file(parking_lot_service: ParkingLotService, input_file: str) -> None:
-    if not os.path.exists(input_file):
+    if not path.exists(input_file):
         raise FileNotFoundError(input_file)
     with open(input_file) as fp:
         lines = fp.readlines()
