@@ -31,4 +31,10 @@ To install run `bin/setup`
 It supports execution using file `bin/parking_lot file_input.txt`  
 It also supports interactive execution `bin/parking_lot`  
 Run tests `nosetests parking_lot/services/tests/parking_lot_service_test.py -v`  
-End to End tests using file input `nosetests tests/parking_lot_file_input_test.py -v`    
+End to End tests using file input `nosetests tests/parking_lot_file_input_test.py -v` 
+
+## Further plan of actions
+1. Introduce dynamic pricing
+2. Allow different types of vehicles
+3. Introduce slot levels to distinguish based on vehicle type
+     
