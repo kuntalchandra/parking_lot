@@ -34,7 +34,10 @@ Run tests `nosetests parking_lot/services/tests/parking_lot_service_test.py -v`
 End to End tests using file input `nosetests tests/parking_lot_file_input_test.py -v` 
 
 ## Further plan of actions
-1. Introduce dynamic pricing
+1. Distribute the service actions e.g. park, exit, availability all should follow SRP.
 2. Allow different types of vehicles
 3. Introduce slot levels to distinguish based on vehicle type
-     
+4. Introduce a chat bot which can recognise voice to text interpretation
+5. Understand the feasibility to go for an aggregation model for available  
+peer to peer parking spaces?
+6. Introduce different pricing based on the location crowd and peak timings.
