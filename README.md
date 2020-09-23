@@ -38,6 +38,6 @@ End to End tests using file input `nosetests tests/parking_lot_file_input_test.p
 2. Allow different types of vehicles
 3. Introduce slot levels to distinguish based on vehicle type
 4. Introduce a chat bot which can recognise voice to text interpretation
-5. Understand the feasibility to go for an aggregation model for available  
+5. Understand the feasibility to go for an aggregator model for available  
 peer to peer parking spaces?
 6. Introduce different pricing based on the location crowd and peak timings.
