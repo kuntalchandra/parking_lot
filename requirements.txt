@@ -9,3 +9,5 @@ setuptools==36.4.0
 cython==0.28.2
 docutils==0.14
 click==6.7
+mysql-connector==2.2.9
+mysql-connector-python-rf==2.2.2

@@ -1,6 +1,6 @@
 from typing import List
-
 from parking_lot.entities.car import Car
+from parking_lot.repositories.parking_lots import ParkingLotRepository
 from parking_lot.exceptions import ParkingLotExistsException, InvalidCommandException
 from parking_lot.entities.parking_slot import ParkingSlot
 
@@ -8,6 +8,13 @@ from parking_lot.entities.parking_slot import ParkingSlot
 class ParkingLotService:
     def __init__(self):
         self.slots = {}
+
+    def parking_lots(self) -> None:
+        parking_lots = ParkingLotRepository()
+        lots = parking_lots.get_all()
+        print("Parking Lot      Location            Pin Code            Size")
+        for lot in lots:
+            print("{}           {}              {}          {}".format(lot["name"], lot["location"], lot["pin"], lot["size"]))
 
     def create_parking_lot(self, slots: str) -> int:
         slots = int(slots)
@@ -26,7 +33,7 @@ class ParkingLotService:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         for slot_number, parking_slot in self.slots.items():
             if parking_slot.available:
-                parking_slot.car = Car(registration_number, color)
+                parking_slot.car = Car(registration_number, color, "", "")
                 parking_slot.available = False
                 self.slots[slot_number] = parking_slot
                 print("Allocated slot number: {}".format(slot_number))

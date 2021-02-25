@@ -4,6 +4,7 @@ from parking_lot.services.parking_lot import ParkingLotService
 from parking_lot.exceptions import InvalidCommandException
 
 commands = (
+    "parking_lots",
     "create_parking_lot",
     "park",
     "leave",

@@ -2,5 +2,5 @@
 
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-nosetests $DIR/../tests/parking_lot_file_input_test.py -v
 python3 $DIR/../setup.py install
+nosetests $DIR/../tests/parking_lot_file_input_test.py -v
