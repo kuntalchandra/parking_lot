@@ -5,7 +5,7 @@ from parking_lot.exceptions import InvalidCommandException
 
 commands = (
     "parking_lots",
-    "create_parking_lot",
+    "select_parking_lot",
     "park",
     "leave",
     "status",
@@ -36,8 +36,11 @@ def process_file(parking_lot_service: ParkingLotService, input_file: str) -> Non
 
 def process_input(parking_lot_service: ParkingLotService) -> None:
     try:
+        print("To maintain the simplicity of the prototype, this application skips the Merchant registration "
+              "and assumes you're Merchant 'ABC' with the id: 1")
         while True:
             line = input("$ ")
+            print(line)
             if line == "exit":
                 exit(0)
             decide_action(parking_lot_service, line)

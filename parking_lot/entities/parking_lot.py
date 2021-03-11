@@ -1,11 +1,20 @@
 class ParkingLot:
     def __init__(self):
+        self.id = None
         self.name = None
         self.area = None
         self.pin_code = None
         self.is_available = 0
         self.start_date = None
         self.slot_count = 0
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, id: str):
+        self._id = id
 
     @property
     def name(self):

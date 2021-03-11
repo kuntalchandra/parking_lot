@@ -1,4 +1,4 @@
-Created a parking lot with 6 slots
+Parking lot Test with 6 slots is ready to use
 Allocated slot number: 1
 Allocated slot number: 2
 Allocated slot number: 3

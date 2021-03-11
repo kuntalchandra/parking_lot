@@ -1,41 +1,50 @@
 from typing import List
 from parking_lot.entities.car import Car
+from parking_lot.repositories.car import CarRepository
 from parking_lot.repositories.parking_lots import ParkingLotRepository
-from parking_lot.exceptions import ParkingLotExistsException, InvalidCommandException
+from parking_lot.exceptions import ParkingLotExistsException, InvalidCommandException, ParkingLotNotExistsException
 from parking_lot.entities.parking_slot import ParkingSlot
 
 
 class ParkingLotService:
     def __init__(self):
         self.slots = {}
+        self.slot_ids = []
 
     def parking_lots(self) -> None:
         parking_lots = ParkingLotRepository()
         lots = parking_lots.get_all()
         print("Parking Lot      Location            Pin Code            Size")
         for lot in lots:
+            self.slot_ids.append(lot["id"])
             print("{}           {}              {}          {}".format(lot["name"], lot["location"], lot["pin"], lot["size"]))
 
-    def create_parking_lot(self, slots: str) -> int:
-        slots = int(slots)
-        if self.slots:
-            raise ParkingLotExistsException("Parking lot already exists")
-        for i in range(1, slots + 1):
+    def select_parking_lot(self, lot: int) -> int:
+        parking_lots = ParkingLotRepository()
+        slot = parking_lots.get_lot(lot)
+        if not slot:
+            raise ParkingLotNotExistsException("Parking lot doesn't exist or already in use")
+        for i in range(1, slot["size"] + 1):
             self.slots[i] = ParkingSlot(available=True)
-        print("Created a parking lot with {} slots".format(slots))
+        print("Parking lot {} with {} slots is ready to use".format(slot["name"], slot["size"]))
         return len(self.slots)
 
     def parking_lot_exists(self):
         return self.slots
 
     def park(self, registration_number: str, color: str) -> [int, bool]:
+        car_repo = CarRepository()
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         for slot_number, parking_slot in self.slots.items():
             if parking_slot.available:
                 parking_slot.car = Car(registration_number, color, "", "")
+                # TODO: Insert the vehicle. Get the id from there itself
+
                 parking_slot.available = False
                 self.slots[slot_number] = parking_slot
+                print(self.slots)
+                # TODO: Introduce the write query
                 print("Allocated slot number: {}".format(slot_number))
                 return slot_number
         print("Sorry, parking lot is full")
