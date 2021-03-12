@@ -31,14 +31,15 @@ To install run `bin/setup`
 It supports execution using file `bin/parking_lot file_input.txt`  
 It also supports interactive execution `bin/parking_lot`  
 Run tests `nosetests parking_lot/services/tests/parking_lot_service_test.py -v`  
-End to End tests using file input `nosetests tests/parking_lot_file_input_test.py -v` 
+End-to-End tests using file input `nosetests tests/parking_lot_file_input_test.py -v` 
 
-## Further plan of actions
+## Further, plan of actions
 0. A lot of cleanup and refactoring needed. Suddenly introducing DB has affected the design principles.
-1. Distribute the service actions e.g. park, exit, availability all should follow SRP.
-2. Allow different types of vehicles
-3. Introduce slot levels to distinguish based on vehicle type
-4. Introduce a chat bot which can recognise voice to text interpretation
-5. Understand the feasibility to go for an aggregator model for available  
+1. Isolate tests DB. Introduce a light database to set up while setup script loads and tear down once usage is over.   
+2. Distribute the service actions e.g. park, exit, availability all should follow SRP.
+3. Allow different types of vehicles
+4. Introduce slot levels to distinguish based on vehicle type
+5. Introduce a chat bot which can recognise voice to text interpretation
+6. Understand the feasibility to go for an aggregator model for available  
 peer to peer parking spaces?
-6. Introduce different pricing based on the location crowd and peak timings.
+7. Introduce different pricing based on the location crowd and peak timings.
