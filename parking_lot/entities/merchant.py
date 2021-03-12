@@ -1,20 +1,17 @@
+from datetime import datetime
+
+
 class Merchant:
-    def __init__(self):
-        self.name = None
-        self.registered_at = None
+    def __init__(self, id: int, name: str, registered_at: datetime):
+        self.id = id
+        self.name = name
+        self.registered_at = registered_at
 
-    @property
-    def name(self):
-        return self._name
+    def get_name(self):
+        return self.name
 
-    @name.setter
-    def name(self, name: str):
-        self._name = name
+    def get_id(self):
+        return self.id
 
-    @property
-    def registered_at(self):
-        return self._registered_at
-
-    @registered_at.setter
-    def registered_at(self, registered_at: str):
-        self._registered_at = registered_at
+    def get_registered_at(self):
+        return self.registered_at

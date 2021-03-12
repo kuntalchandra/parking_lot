@@ -14,4 +14,4 @@ class CarRepository:
         value = (car.get_color(), car.get_registration_number(), now)
         m_cursor.execute(sql, value)
         self.db.commit()
-        return self.db.insert_id()
+        return m_cursor.lastrowid

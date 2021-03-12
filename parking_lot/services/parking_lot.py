@@ -1,5 +1,9 @@
+import time
+from parking_lot.entities.parking_lot import ParkingLot
+from parking_lot.repositories.parking_slot import ParkingSlotRepository
 from typing import List
 from parking_lot.entities.car import Car
+from parking_lot.entities.merchant import Merchant
 from parking_lot.repositories.car import CarRepository
 from parking_lot.repositories.parking_lots import ParkingLotRepository
 from parking_lot.exceptions import ParkingLotExistsException, InvalidCommandException, ParkingLotNotExistsException
@@ -10,6 +14,8 @@ class ParkingLotService:
     def __init__(self):
         self.slots = {}
         self.slot_ids = []
+        self.parking_lot = None
+        self.demo_merchant = Merchant(1, "ABC", "2020-01-01")
 
     def parking_lots(self) -> None:
         parking_lots = ParkingLotRepository()
@@ -24,8 +30,12 @@ class ParkingLotService:
         slot = parking_lots.get_lot(lot)
         if not slot:
             raise ParkingLotNotExistsException("Parking lot doesn't exist or already in use")
+        now = time.strftime("%Y-%m-%d %H-%M-%S")
+        self.parking_lot = ParkingLot(id=slot["id"], name=slot["name"], area=slot["location"],
+                                      pin_code=slot["pin"], is_available=False, start_date=now,
+                                      slot_count=slot["size"])
         for i in range(1, slot["size"] + 1):
-            self.slots[i] = ParkingSlot(available=True)
+            self.slots[i] = ParkingSlot(available=True, parking_lot=self.parking_lot)
         print("Parking lot {} with {} slots is ready to use".format(slot["name"], slot["size"]))
         return len(self.slots)
 
@@ -34,17 +44,18 @@ class ParkingLotService:
 
     def park(self, registration_number: str, color: str) -> [int, bool]:
         car_repo = CarRepository()
+        parking_slot_repo = ParkingSlotRepository()
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         for slot_number, parking_slot in self.slots.items():
             if parking_slot.available:
-                parking_slot.car = Car(registration_number, color, "", "")
-                # TODO: Insert the vehicle. Get the id from there itself
-
-                parking_slot.available = False
+                parking_slot.set_car(Car(registration_number, color, "", ""))
+                car_id = car_repo.park(parking_slot.get_car())
+                parking_slot.car.set_id(car_id)
+                parking_slot.set_merchant(self.demo_merchant)
+                parking_slot.set_available(False)
                 self.slots[slot_number] = parking_slot
-                print(self.slots)
-                # TODO: Introduce the write query
+                parking_slot_repo.reserve(parking_slot, parking_slot.get_car())
                 print("Allocated slot number: {}".format(slot_number))
                 return slot_number
         print("Sorry, parking lot is full")

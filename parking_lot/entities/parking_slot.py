@@ -4,40 +4,29 @@ from parking_lot.entities.parking_lot import ParkingLot
 
 
 class ParkingSlot:
-    def __init__(self, available: bool):
+    def __init__(self, available: bool, parking_lot: ParkingLot):
         self.merchant = None
-        self.parking_lot = None
+        self.parking_lot = parking_lot
         self.car = None
         self.available = available
 
-    @property
-    def merchant(self):
-        return self._merchant
+    def set_merchant(self, merchant: Merchant) -> None:
+        self.merchant = merchant
 
-    @merchant.setter
-    def merchant(self, merchant: Merchant):
-        self._merchant = merchant
+    def get_merchant(self) -> Merchant:
+        return self.merchant
 
-    @property
-    def parking_lot(self):
-        return self._parking_lot
+    def get_parking_lot(self) -> ParkingLot:
+        return self.parking_lot
 
-    @parking_lot.setter
-    def parking_lot(self, parking_lot: ParkingLot):
-        self._parking_lot = parking_lot
+    def set_car(self, car: Car) -> None:
+        self.car = car
 
-    @property
-    def car(self):
-        return self._car
+    def get_car(self) -> Car:
+        return self.car
 
-    @car.setter
-    def car(self, car: Car):
-        self._car = car
+    def set_available(self, available: bool) -> None:
+        self.available = available
 
-    @property
-    def available(self):
-        return self._available
-
-    @available.setter
-    def available(self, available: bool):
-        self._available = available
+    def get_available(self) -> bool:
+        return self.available

@@ -34,6 +34,7 @@ Run tests `nosetests parking_lot/services/tests/parking_lot_service_test.py -v`
 End to End tests using file input `nosetests tests/parking_lot_file_input_test.py -v` 
 
 ## Further plan of actions
+0. A lot of cleanup and refactoring needed. Suddenly introducing DB has affected the design principles.
 1. Distribute the service actions e.g. park, exit, availability all should follow SRP.
 2. Allow different types of vehicles
 3. Introduce slot levels to distinguish based on vehicle type

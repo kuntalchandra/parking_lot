@@ -10,7 +10,7 @@ class ParkingSlotRepository:
     def reserve(self, slot: ParkingSlot, car: Car) -> int:
         m_cursor = self.db.cursor()
         sql = "INSERT INTO parking_slot (merchant_id, parking_lot_id, vehicle_id, available) VALUES (%s, %s, %s, %s)"
-        value = (1, slot.parking_lot.id(), car.get_id(), "1")
+        value = (slot.get_merchant().get_id(), slot.get_parking_lot().get_id(), car.get_id(), "0")
         m_cursor.execute(sql, value)
         self.db.commit()
-        return self.db.insert_id()
+        return m_cursor.lastrowid
