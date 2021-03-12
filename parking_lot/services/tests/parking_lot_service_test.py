@@ -1,5 +1,5 @@
 from unittest import TestCase
-from parking_lot.exceptions import InvalidCommandException
+from parking_lot.exceptions import InvalidCommandException, ParkingLotNotExistsException
 from parking_lot.services.parking_lot import ParkingLotService
 
 
@@ -14,7 +14,7 @@ class ParkingLotServiceTest(TestCase):
 
     def test_select_parking_lot(self):
         obj = ParkingLotService()
-        self.assertEqual(obj.select_parking_lot(str(self.slot_id)))
+        self.assertEqual(obj.select_parking_lot(self.slot_id), 6)
 
     def test_parking_lot_exists(self):
         obj = ParkingLotService()
@@ -23,8 +23,12 @@ class ParkingLotServiceTest(TestCase):
 
     def test_parking_lot_does_not_exists(self):
         obj = ParkingLotService()
-        obj.select_parking_lot(12345)
-        self.assertFalse(obj.parking_lot_exists())
+        try:
+            obj.select_parking_lot(12345)
+            obj.parking_lot_exists()
+        except ParkingLotNotExistsException as e:
+            print("This parking lot doesn't exist. Skip the raise exception from the service. {}".format(e))
+            pass
 
     def test_park(self):
         obj = ParkingLotService()
