@@ -5,7 +5,6 @@ from parking_lot.repositories.parking_slot import ParkingSlotRepository
 from parking_lot.repositories.car import CarRepository
 
 # Clean up stale data
-# sleep(3)
 car_repo = CarRepository()
 parking_slot_repo = ParkingSlotRepository()
 car_repo.clean_up()

@@ -1,6 +1,7 @@
 from typing import List, Dict
 from mysql import connector
 from parking_lot.db_conn.connection import DBConnection
+from parking_lot.helper.debug_helper import DebugHelper
 
 
 class ParkingLotRepository:
@@ -23,6 +24,7 @@ class ParkingLotRepository:
                 lots.append(lot)
         except connector.Error as e:
             print(e)
+            DebugHelper.print_exception()
         finally:
             if self.db.is_connected():
                 m_cursor.close()
@@ -41,6 +43,7 @@ class ParkingLotRepository:
                 lot["size"] = row[6]
         except connector.Error as e:
             print(e)
+            DebugHelper.print_exception()
         finally:
             if self.db.is_connected():
                 m_cursor.close()

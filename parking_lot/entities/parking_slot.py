@@ -4,11 +4,15 @@ from parking_lot.entities.parking_lot import ParkingLot
 
 
 class ParkingSlot:
-    def __init__(self, available: bool, parking_lot: ParkingLot):
+    def __init__(self, id: int, available: bool, parking_lot: ParkingLot):
+        self.id = id
         self.merchant = None
         self.parking_lot = parking_lot
         self.car = None
         self.available = available
+
+    def get_id(self) -> int:
+        return self.id
 
     def set_merchant(self, merchant: Merchant) -> None:
         self.merchant = merchant

@@ -20,10 +20,11 @@ class ParkingLotService:
     def parking_lots(self) -> None:
         parking_lots = ParkingLotRepository()
         lots = parking_lots.get_all()
-        print("Parking Lot      Location            Pin Code            Size")
+        print("ID   Parking Lot      Location            Pin Code            Size")
         for lot in lots:
             self.slot_ids.append(lot["id"])
-            print("{}           {}              {}          {}".format(lot["name"], lot["location"], lot["pin"], lot["size"]))
+            print("{}   {}           {}              {}          {}".format(lot["id"], lot["name"], lot["location"],
+                                                                            lot["pin"], lot["size"]))
 
     def select_parking_lot(self, lot: int) -> int:
         parking_lots = ParkingLotRepository()
@@ -35,7 +36,7 @@ class ParkingLotService:
                                       pin_code=slot["pin"], is_available=False, start_date=now,
                                       slot_count=slot["size"])
         for i in range(1, slot["size"] + 1):
-            self.slots[i] = ParkingSlot(available=True, parking_lot=self.parking_lot)
+            self.slots[i] = ParkingSlot(id=i, available=True, parking_lot=self.parking_lot)
         print("Parking lot {} with {} slots is ready to use".format(slot["name"], slot["size"]))
         return len(self.slots)
 
@@ -69,6 +70,10 @@ class ParkingLotService:
             raise InvalidCommandException("Slot {} is out of range".format(slot))
         if self.slots[slot].available:
             raise InvalidCommandException("Slot {} was never occupied".format(slot))
+        car_repo = CarRepository()
+        car_repo.vacate(self.slots[slot].get_car())
+        parking_slot_repo = ParkingSlotRepository()
+        parking_slot_repo.vacate(self.slots[slot])
         self.slots[slot].car = None
         self.slots[slot].available = True
         print("Slot number {} is free".format(slot))
@@ -93,7 +98,7 @@ class ParkingLotService:
         return cars
 
     def registration_numbers_for_cars_with_colour(
-        self, color: str
+            self, color: str
     ) -> [List[str], bool]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
@@ -121,14 +126,14 @@ class ParkingLotService:
         return False
 
     def slot_number_for_registration_number(
-        self, registration_number: str
+            self, registration_number: str
     ) -> [int, bool]:
         if not self.slots:
             raise ParkingLotExistsException("Parking lot doesn't exists")
         for slot, details in self.slots.items():
             if (
-                not details.available
-                and details.car.get_registration_number() == registration_number
+                    not details.available
+                    and details.car.get_registration_number() == registration_number
             ):
                 print(slot)
                 return slot
