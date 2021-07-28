@@ -6,7 +6,7 @@ from parking_lot.cli import process_file
 
 
 class ParkingLotFileInputTest(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.input_file = "/tests/fixtures/file_input.txt"
         self.output_file = "/tests/fixtures/file_output.txt"
         self.stdout_file = "/var/tmp/parking_lot_output_file_test.txt"
