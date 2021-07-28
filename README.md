@@ -36,7 +36,7 @@ End-to-End tests using file input `nosetests tests/parking_lot_file_input_test.p
 ## Further, plan of actions
 Extend the Parking lot landscape according to:
 1. Instead of flat parking lot, think n slot levels e.g. a matrix 3 * 4
-2. Multi storey parking.(Multiple lanes in single floor)
+2. Multi-storey parking.(Multiple lanes in single floor)
 3. Vehicle categories(bike-4 per slot,car-2 slot,bus/truck-1 slot)
 4. Entrypoint are selected slots present in 4 corner slots
 Assumptions: there is enough space to move vehicles between slots.
