@@ -4,6 +4,17 @@ from sqlite3 import Connection
 from fastapi import Depends, Request
 
 from parking_lot.database import connect_database
+from parking_lot.domain.allocation import (
+    DefaultSpaceAllocationPolicy,
+)
+from parking_lot.domain.clock import SystemClock
+from parking_lot.repositories.parking_spaces import (
+    ParkingSpaceRepository,
+)
+from parking_lot.repositories.parking_tickets import (
+    ParkingTicketRepository,
+)
+from parking_lot.services.parking import ParkingService
 from parking_lot.repositories.parking_lots import (
     ParkingLotRepository,
 )
@@ -28,3 +39,19 @@ def get_parking_lot_service(
 ) -> ParkingLotService:
     repository = ParkingLotRepository(connection)
     return ParkingLotService(repository)
+
+def get_parking_service(
+    connection: Connection = Depends(get_connection),
+) -> ParkingService:
+    return ParkingService(
+        connection=connection,
+        parking_lot_repository=ParkingLotRepository(connection),
+        parking_space_repository=ParkingSpaceRepository(
+            connection
+        ),
+        parking_ticket_repository=ParkingTicketRepository(
+            connection
+        ),
+        allocation_policy=DefaultSpaceAllocationPolicy(),
+        clock=SystemClock(),
+    )

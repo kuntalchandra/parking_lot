@@ -3,6 +3,9 @@ from fastapi.responses import JSONResponse
 
 from parking_lot.domain.exceptions import (
     InvalidParkingLotConfigurationError,
+    InvalidRegistrationNumberError,
+    ParkingLotFullError,
+    VehicleAlreadyParkedError,
     ParkingLotAlreadyExistsError,
     ParkingLotNotFoundError,
 )
@@ -41,6 +44,39 @@ def register_error_handlers(app: FastAPI) -> None:
         return _error_response(
             status_code=404,
             code="PARKING_LOT_NOT_FOUND",
+            message=str(exception),
+        )
+
+    @app.exception_handler(InvalidRegistrationNumberError)
+    async def invalid_registration_handler(
+        request: Request,
+        exception: InvalidRegistrationNumberError,
+    ) -> JSONResponse:
+        return _error_response(
+            status_code=422,
+            code="INVALID_REGISTRATION_NUMBER",
+            message=str(exception),
+        )
+
+    @app.exception_handler(VehicleAlreadyParkedError)
+    async def vehicle_already_parked_handler(
+        request: Request,
+        exception: VehicleAlreadyParkedError,
+    ) -> JSONResponse:
+        return _error_response(
+            status_code=409,
+            code="VEHICLE_ALREADY_PARKED",
+            message=str(exception),
+        )
+
+    @app.exception_handler(ParkingLotFullError)
+    async def parking_lot_full_handler(
+        request: Request,
+        exception: ParkingLotFullError,
+    ) -> JSONResponse:
+        return _error_response(
+            status_code=409,
+            code="PARKING_LOT_FULL",
             message=str(exception),
         )
 

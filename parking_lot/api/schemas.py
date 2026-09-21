@@ -1,3 +1,8 @@
+from datetime import datetime
+from parking_lot.domain.models import (
+    ParkingSpaceSize,
+    TicketState,
+)
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -31,3 +36,22 @@ class ErrorDetail(BaseModel):
 
 class ErrorResponse(BaseModel):
     error: ErrorDetail
+
+class ParkVehicleRequest(BaseModel):
+    registration_number: str = Field(min_length=1)
+
+
+class TicketResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    parking_lot_id: int
+    registration_number: str
+    space_number: int
+    space_size: ParkingSpaceSize
+    parked_at: datetime
+    exited_at: datetime | None
+    billed_hours: int | None
+    hourly_rate: int
+    total_cost: int | None
+    state: TicketState
