@@ -339,9 +339,9 @@ One important constraint will be retained: an in-memory SQLite database belongs 
 | Phase | Status | Notes |
 | --- | --- | --- |
 | Plan revision | In review | Awaiting confirmation and commit |
-| Phase 1 — Requirements and API contracts | Not started | Starts after revised plan is committed |
-| Phase 2 — Project baseline and isolated SQLite foundation | Not started |  |
-| Phase 3 — Parking-space configuration and allocation | Not started |  |
+| Phase 1 — Requirements and API contracts | Completed | Revised plan is committed |
+| Phase 2 — Project baseline and isolated SQLite foundation | Completed | SQLite schema, connection management and isolated tests committed |
+| Phase 3 — Parking-space configuration and allocation | In progress | Domain models and allocation policy committed |
 | Phase 4 — Ticket issuance and parking transaction | Not started |  |
 | Phase 5 — Exit and fixed hourly pricing | Not started |  |
 | Phase 6 — Availability, occupancy, and lookups | Not started |  |
