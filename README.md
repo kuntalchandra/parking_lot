@@ -1,45 +1,294 @@
 # Parking Lot
-## Problem Statement
-I own a parking lot that can hold up to 'n' cars at any given point in time. Each slot is
-given a number starting at 1 increasing with increasing distance from the entry point
-in steps of one. I want to create an automated ticketing system that allows my
-customers to use my parking lot without human intervention.  
 
-When a car enters my parking lot, I want to have a ticket issued to the driver. The
-ticket issuing process includes us documenting the registration number (number
-plate) and the colour of the car and allocating an available parking slot to the car
-before actually handing over a ticket to the driver (we assume that our customers are
-nice enough to always park in the slots allocated to them). The customer should be
-allocated a parking slot which is nearest to the entry. At the exit the customer returns
-the ticket which then marks the slot they were using as being available.  
+A REST-based parking lot service designed as a focused low-level design exercise.
 
-Due to government regulation, the system should provide me with the ability to find out:
-  
-● Registration numbers of all cars of a particular colour.  
-● Slot number in which a car with a given registration number is parked.  
-● Slot numbers of all slots where a car of a particular colour is parked.  
+The service manages one configurable parking lot, allocates the nearest compatible parking space, issues tickets, calculates fixed hourly parking costs, processes exits, and provides availability and occupancy queries.
 
-We interact with the system via a simple set of commands which produce a specific
-output. The system should allow input in two ways.  
+## Functional Scope
 
-1) It should provide us with an interactive command prompt based shell where
-commands can be typed in.
-2) It should accept a filename as a parameter at the command prompt and read the
-commands from that file  
+- Create one parking lot with configurable numbers of:
+  - small spaces;
+  - medium spaces;
+  - large spaces.
+- Treat the currently supported vehicle as small.
+- Allocate spaces using this priority:
+  1. nearest available small space;
+  2. nearest available medium space;
+  3. nearest available large space.
+- Issue a ticket when a vehicle parks.
+- Prevent the same registration number from parking twice simultaneously.
+- Record parking and exit times.
+- Charge a fixed hourly rate using integer rupee values.
+- Round every started hour upwards, with a minimum charge of one hour.
+- Release the parking space when the ticket exits.
+- Query:
+  - availability by space size;
+  - current occupancy;
+  - a ticket by ID;
+  - tickets by registration number and state;
+  - complete ticket history.
 
-To install run `bin/setup`  
-It supports execution using file `bin/parking_lot file_input.txt`  
-It also supports interactive execution `bin/parking_lot`  
-Run tests `nosetests parking_lot/services/tests/parking_lot_service_test.py -v`  
-End-to-End tests using file input `nosetests tests/parking_lot_file_input_test.py -v` 
+Colour-based searches and multiple vehicle types are deferred.
 
-## Further, plan of actions
-0. A lot of cleanup and refactoring needed. Suddenly introducing DB has affected the design principles.
-1. Isolate tests DB. Introduce a light database to set up while setup script loads and tear down once usage is over.   
-2. Distribute the service actions e.g. park, exit, availability all should follow SRP.
-3. Allow different types of vehicles
-4. Introduce slot levels to distinguish based on vehicle type
-5. Introduce a chat bot which can recognise voice to text interpretation
-6. Understand the feasibility to go for an aggregator model for available  
-peer to peer parking spaces?
-7. Introduce different pricing based on the location crowd and peak timings.
+## Design
+
+```text
+HTTP request
+    → FastAPI router
+    → Application service
+    → Repository
+    → SQLite
+```
+
+### Responsibilities
+
+- **API layer**: HTTP validation, response models and error mapping.
+- **Application services**: parking, exit, configuration and query use cases.
+- **Domain layer**: models, allocation policy, pricing policy and expected errors.
+- **Repositories**: SQL execution and database-row mapping.
+- **SQLite schema**: relational constraints and final consistency protection.
+
+Dependencies are supplied explicitly. Repositories do not obtain a global database connection.
+
+Each API request owns one SQLite connection. Repositories participating in the request share that connection, allowing parking and exit operations to use one transaction.
+
+## Important Design Decisions
+
+### Availability is derived
+
+A parking space does not store an independent `available` flag.
+
+A space is occupied when it has a ticket in the `PARKED` state. Changing the ticket to `EXITED` makes the space available again. This avoids contradictory occupancy and availability state.
+
+### Allocation policy
+
+Vehicle-to-space compatibility is represented through `SpaceAllocationPolicy`.
+
+The current implementation supports small vehicles and returns this priority:
+
+```text
+SMALL → MEDIUM → LARGE
+```
+
+The parking service depends on the policy contract rather than hard-coding compatibility rules.
+
+### Pricing policy
+
+Parking cost is represented through `PricingPolicy`.
+
+The current `FixedHourlyPricingPolicy` calculates:
+
+```text
+billable_hours = max(1, ceil(duration_seconds / 3600))
+total_cost = billable_hours × hourly_rate
+```
+
+A different pricing policy can be supplied without changing exit orchestration.
+
+### Ticket lifecycle
+
+A ticket has two states:
+
+```text
+PARKED → EXITED
+```
+
+Parking and ticket creation form one transaction. Exit, cost calculation and ticket closure form another transaction.
+
+The ticket snapshots the hourly rate at parking time so an existing session is not affected by later configuration changes.
+
+### Database connection lifecycle
+
+The application uses request-scoped SQLite connections rather than a singleton connection.
+
+Tests use isolated in-memory databases or temporary file-backed databases.
+
+## Requirements
+
+- Python 3.11 or newer
+- No separately running database server
+
+SQLite support is provided by Python's standard library.
+
+## Setup
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Install the project:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
+
+Initialise the development database:
+
+```bash
+python -m parking_lot.database initialise
+```
+
+This creates:
+
+```text
+data/parking_lot.db
+```
+
+Generated database files are excluded from Git.
+
+## Run
+
+```bash
+uvicorn parking_lot.app:app --reload
+```
+
+Open the generated API documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+The root path intentionally has no endpoint.
+
+## API Summary
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/parking-lots` | Create the parking lot and its spaces |
+| `GET` | `/parking-lots` | List parking lots |
+| `GET` | `/parking-lots/{lot_id}` | Retrieve the parking lot |
+| `POST` | `/parking-lots/{lot_id}/tickets` | Park a vehicle and issue a ticket |
+| `POST` | `/parking-lots/{lot_id}/tickets/{ticket_id}/exit` | Exit and calculate cost |
+| `GET` | `/parking-lots/{lot_id}/tickets/{ticket_id}` | Retrieve a ticket |
+| `GET` | `/parking-lots/{lot_id}/tickets` | Search ticket history |
+| `GET` | `/parking-lots/{lot_id}/availability` | Get availability by size |
+| `GET` | `/parking-lots/{lot_id}/spaces?occupied=true` | Get current occupancy |
+
+## Example Flow
+
+### Create the parking lot
+
+```bash
+curl -X POST http://127.0.0.1:8000/parking-lots \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Forum Parking",
+    "small_space_count": 2,
+    "medium_space_count": 1,
+    "large_space_count": 1,
+    "hourly_rate": 10
+  }'
+```
+
+### Park a vehicle
+
+```bash
+curl -X POST http://127.0.0.1:8000/parking-lots/1/tickets \
+  -H "Content-Type: application/json" \
+  -d '{
+    "registration_number": "KA-01-AB-1234"
+  }'
+```
+
+A successful response contains a `PARKED` ticket and the allocated space.
+
+### Check availability
+
+```bash
+curl http://127.0.0.1:8000/parking-lots/1/availability
+```
+
+### Check occupancy
+
+```bash
+curl "http://127.0.0.1:8000/parking-lots/1/spaces?occupied=true"
+```
+
+### Find active parking by registration number
+
+```bash
+curl \
+  "http://127.0.0.1:8000/parking-lots/1/tickets?registration_number=KA-01-AB-1234&state=PARKED"
+```
+
+### Exit
+
+Replace `1` at the end with the issued ticket ID:
+
+```bash
+curl -X POST \
+  http://127.0.0.1:8000/parking-lots/1/tickets/1/exit
+```
+
+The response contains the updated `EXITED` ticket, billed hours and total cost.
+
+## Tests
+
+Run the complete revised test suite:
+
+```bash
+python -m unittest discover \
+  -s tests \
+  -p "test_*.py" \
+  -v
+```
+
+Tests cover:
+
+- schema constraints and foreign-key enforcement;
+- allocation priority;
+- fixed-hour pricing boundaries;
+- repository mapping;
+- service validation and transactions;
+- parking, exit and space reuse;
+- REST contracts and error responses;
+- availability, occupancy and ticket queries.
+
+## Project Structure
+
+```text
+parking_lot/
+├── api/
+│   ├── dependencies.py
+│   ├── errors.py
+│   ├── parking_lots.py
+│   ├── parking_spaces.py
+│   ├── schemas.py
+│   └── tickets.py
+├── domain/
+│   ├── allocation.py
+│   ├── clock.py
+│   ├── exceptions.py
+│   ├── models.py
+│   └── pricing.py
+├── repositories/
+│   ├── parking_lots.py
+│   ├── parking_spaces.py
+│   └── parking_tickets.py
+├── services/
+│   ├── exit.py
+│   ├── parking.py
+│   ├── parking_lots.py
+│   └── queries.py
+├── app.py
+├── database.py
+└── schema.sql
+```
+
+## Deferred Extensions
+
+### Multiple vehicle types
+
+The current API treats every vehicle as small. A later extension can add vehicle size/type to the parking request and supply the corresponding allocation policy.
+
+### Multiple parking lots
+
+The first version permits one parking lot. Data, repository queries and API paths already use `parking_lot_id`, keeping lot state isolated when support for additional lots is enabled.
+
+### Dynamic pricing
+
+A later pricing policy can consider space size, duration, time of day, occupancy or location without changing the ticket-exit workflow.
