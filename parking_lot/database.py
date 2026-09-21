@@ -49,9 +49,13 @@ def initialise_database(
 ) -> None:
     """Create a file-backed development database and apply the schema."""
     database_path.parent.mkdir(parents=True, exist_ok=True)
+    connection = connect_database(database_path)
 
-    with connect_database(database_path) as connection:
-        initialise_schema(connection)
+    try:
+        with connection:
+            initialise_schema(connection)
+    finally:
+        connection.close()
 
 
 def main() -> None:
