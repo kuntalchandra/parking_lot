@@ -23,3 +23,14 @@ class VehicleAlreadyParkedError(ParkingLotError):
 
 class ParkingLotFullError(ParkingLotError):
     """Raised when no compatible parking space is available."""
+
+class InvalidParkingDurationError(ParkingLotError):
+    """Raised when exit time precedes parking time."""
+
+
+class ParkingTicketNotFoundError(ParkingLotError):
+    """Raised when a requested parking ticket does not exist."""
+
+
+class ParkingTicketAlreadyExitedError(ParkingLotError):
+    """Raised when an EXITED ticket is used again."""
