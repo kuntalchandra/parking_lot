@@ -1,7 +1,13 @@
 .idea
-__pycache__
-logs
-venv
+__pycache__/
+logs/
+venv/
+.venv/
 build/
-parking_lot.egg-info
+parking_lot.egg-info/
 dist/
+data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
