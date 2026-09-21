@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -19,6 +21,22 @@ def connect_database(database_path: str | Path) -> sqlite3.Connection:
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
     return connection
+
+@contextmanager
+def transaction(
+    connection: sqlite3.Connection,
+) -> Iterator[None]:
+    """Run one SQLite write transaction."""
+
+    connection.execute("BEGIN IMMEDIATE")
+
+    try:
+        yield
+    except Exception:
+        connection.rollback()
+        raise
+    else:
+        connection.commit()
 
 
 def initialise_schema(connection: sqlite3.Connection) -> None:

@@ -12,3 +12,14 @@ class ParkingLotAlreadyExistsError(ParkingLotError):
 
 class ParkingLotNotFoundError(ParkingLotError):
     """Raised when a requested parking lot does not exist."""
+
+class InvalidRegistrationNumberError(ParkingLotError):
+    """Raised when a registration number is invalid."""
+
+
+class VehicleAlreadyParkedError(ParkingLotError):
+    """Raised when a vehicle already has a PARKED ticket."""
+
+
+class ParkingLotFullError(ParkingLotError):
+    """Raised when no compatible parking space is available."""
