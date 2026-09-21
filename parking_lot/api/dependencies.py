@@ -8,6 +8,10 @@ from parking_lot.domain.allocation import (
     DefaultSpaceAllocationPolicy,
 )
 from parking_lot.domain.clock import SystemClock
+from parking_lot.domain.pricing import (
+    FixedHourlyPricingPolicy,
+)
+from parking_lot.services.exit import ExitService
 from parking_lot.repositories.parking_spaces import (
     ParkingSpaceRepository,
 )
@@ -53,5 +57,18 @@ def get_parking_service(
             connection
         ),
         allocation_policy=DefaultSpaceAllocationPolicy(),
+        clock=SystemClock(),
+    )
+
+def get_exit_service(
+    connection: Connection = Depends(get_connection),
+) -> ExitService:
+    return ExitService(
+        connection=connection,
+        parking_lot_repository=ParkingLotRepository(connection),
+        parking_ticket_repository=ParkingTicketRepository(
+            connection
+        ),
+        pricing_policy=FixedHourlyPricingPolicy(),
         clock=SystemClock(),
     )

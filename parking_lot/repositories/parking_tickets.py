@@ -110,6 +110,36 @@ class ParkingTicketRepository:
 
         return self._to_ticket(row) if row is not None else None
 
+    def mark_exited(
+        self,
+        ticket_id: int,
+        exited_at: datetime,
+        billed_hours: int,
+        total_cost: int,
+    ) -> ParkingTicket | None:
+        cursor = self.connection.execute(
+            """
+            UPDATE parking_ticket
+            SET exited_at = ?,
+                billed_hours = ?,
+                total_cost = ?,
+                state = 'EXITED'
+            WHERE id = ?
+              AND state = 'PARKED'
+            """,
+            (
+                exited_at.isoformat(),
+                billed_hours,
+                total_cost,
+                ticket_id,
+            ),
+        )
+
+        if cursor.rowcount == 0:
+            return None
+
+        return self.get(ticket_id)
+
     @staticmethod
     def _to_ticket(row: sqlite3.Row) -> ParkingTicket:
         return ParkingTicket(

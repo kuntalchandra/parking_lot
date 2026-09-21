@@ -8,6 +8,9 @@ from parking_lot.domain.exceptions import (
     VehicleAlreadyParkedError,
     ParkingLotAlreadyExistsError,
     ParkingLotNotFoundError,
+    InvalidParkingDurationError,
+    ParkingTicketAlreadyExitedError,
+    ParkingTicketNotFoundError,
 )
 
 
@@ -77,6 +80,39 @@ def register_error_handlers(app: FastAPI) -> None:
         return _error_response(
             status_code=409,
             code="PARKING_LOT_FULL",
+            message=str(exception),
+        )
+
+    @app.exception_handler(ParkingTicketNotFoundError)
+    async def parking_ticket_not_found_handler(
+        request: Request,
+        exception: ParkingTicketNotFoundError,
+    ) -> JSONResponse:
+        return _error_response(
+            status_code=404,
+            code="PARKING_TICKET_NOT_FOUND",
+            message=str(exception),
+        )
+
+    @app.exception_handler(ParkingTicketAlreadyExitedError)
+    async def parking_ticket_exited_handler(
+        request: Request,
+        exception: ParkingTicketAlreadyExitedError,
+    ) -> JSONResponse:
+        return _error_response(
+            status_code=409,
+            code="PARKING_TICKET_ALREADY_EXITED",
+            message=str(exception),
+        )
+
+    @app.exception_handler(InvalidParkingDurationError)
+    async def invalid_parking_duration_handler(
+        request: Request,
+        exception: InvalidParkingDurationError,
+    ) -> JSONResponse:
+        return _error_response(
+            status_code=409,
+            code="INVALID_PARKING_DURATION",
             message=str(exception),
         )
 

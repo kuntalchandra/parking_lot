@@ -343,7 +343,7 @@ One important constraint will be retained: an in-memory SQLite database belongs 
 | Phase 2 — Project baseline and isolated SQLite foundation | Completed | SQLite schema, connection management and isolated tests committed |
 | Phase 3 — Parking-space configuration and allocation | Completed | Configurable spaces, allocation and parking-lot APIs completed |
 | Phase 4 — Ticket issuance and parking transaction | Completed | Transactional parking and ticket issuance completed |
-| Phase 5 — Exit and fixed hourly pricing | Not started |  |
+| Phase 5 — Exit and fixed hourly pricing | Completed | Ticket exit, hourly cost and space release completed |
 | Phase 6 — Availability, occupancy, and lookups | Not started |  |
 | Phase 7 — Cleanup, documentation, and final design discussion | Not started |  |
 
