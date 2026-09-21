@@ -1,12 +1,15 @@
 from fastapi import APIRouter, Depends
-
+from parking_lot.domain.models import TicketState
+from parking_lot.services.queries import ParkingQueryService
 from parking_lot.api.schemas import (
     ParkVehicleRequest,
     TicketResponse,
+    TicketListResponse,
 )
 from parking_lot.api.dependencies import (
     get_exit_service,
     get_parking_service,
+    get_parking_query_service,
 )
 from parking_lot.services.exit import ExitService
 from parking_lot.services.parking import ParkingService
@@ -29,6 +32,50 @@ def park_vehicle(
     ticket = service.park_vehicle(
         parking_lot_id=parking_lot_id,
         registration_number=request.registration_number,
+    )
+    return TicketResponse.model_validate(ticket)
+
+# GET /parking-lots/{parking_lot_id}/tickets
+# Lists ticket history with optional registration and state filters.
+@router.get("", response_model=TicketListResponse)
+def list_tickets(
+    parking_lot_id: int,
+    registration_number: str | None = None,
+    state: TicketState | None = None,
+    service: ParkingQueryService = Depends(
+        get_parking_query_service
+    ),
+) -> TicketListResponse:
+    tickets = service.list_tickets(
+        parking_lot_id=parking_lot_id,
+        registration_number=registration_number,
+        state=state,
+    )
+
+    return TicketListResponse(
+        tickets=[
+            TicketResponse.model_validate(ticket)
+            for ticket in tickets
+        ]
+    )
+
+
+# GET /parking-lots/{parking_lot_id}/tickets/{ticket_id}
+# Returns one ticket scoped to its parking lot.
+@router.get(
+    "/{ticket_id}",
+    response_model=TicketResponse,
+)
+def get_ticket(
+    parking_lot_id: int,
+    ticket_id: int,
+    service: ParkingQueryService = Depends(
+        get_parking_query_service
+    ),
+) -> TicketResponse:
+    ticket = service.get_ticket(
+        parking_lot_id=parking_lot_id,
+        ticket_id=ticket_id,
     )
     return TicketResponse.model_validate(ticket)
 

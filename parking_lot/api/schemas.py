@@ -55,3 +55,32 @@ class TicketResponse(BaseModel):
     hourly_rate: int
     total_cost: int | None
     state: TicketState
+
+class AvailableSpacesResponse(BaseModel):
+    small: int
+    medium: int
+    large: int
+
+
+class AvailabilityResponse(BaseModel):
+    parking_lot_id: int
+    available: AvailableSpacesResponse
+    total_available: int
+
+
+class OccupiedSpaceResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    space_number: int
+    space_size: ParkingSpaceSize
+    registration_number: str
+    ticket_id: int
+    parked_at: datetime
+
+
+class ParkingSpaceListResponse(BaseModel):
+    spaces: list[OccupiedSpaceResponse]
+
+
+class TicketListResponse(BaseModel):
+    tickets: list[TicketResponse]

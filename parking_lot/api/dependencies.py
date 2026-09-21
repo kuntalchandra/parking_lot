@@ -11,6 +11,7 @@ from parking_lot.domain.clock import SystemClock
 from parking_lot.domain.pricing import (
     FixedHourlyPricingPolicy,
 )
+from parking_lot.services.queries import ParkingQueryService
 from parking_lot.services.exit import ExitService
 from parking_lot.repositories.parking_spaces import (
     ParkingSpaceRepository,
@@ -71,4 +72,17 @@ def get_exit_service(
         ),
         pricing_policy=FixedHourlyPricingPolicy(),
         clock=SystemClock(),
+    )
+
+def get_parking_query_service(
+    connection: Connection = Depends(get_connection),
+) -> ParkingQueryService:
+    return ParkingQueryService(
+        parking_lot_repository=ParkingLotRepository(connection),
+        parking_space_repository=ParkingSpaceRepository(
+            connection
+        ),
+        parking_ticket_repository=ParkingTicketRepository(
+            connection
+        ),
     )

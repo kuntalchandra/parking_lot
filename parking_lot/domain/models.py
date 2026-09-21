@@ -50,3 +50,23 @@ class ParkingTicket:
     hourly_rate: int
     total_cost: int | None
     state: TicketState
+
+@dataclass(frozen=True, slots=True)
+class ParkingAvailability:
+    parking_lot_id: int
+    small: int
+    medium: int
+    large: int
+
+    @property
+    def total(self) -> int:
+        return self.small + self.medium + self.large
+
+
+@dataclass(frozen=True, slots=True)
+class OccupiedSpace:
+    space_number: int
+    space_size: ParkingSpaceSize
+    registration_number: str
+    ticket_id: int
+    parked_at: datetime

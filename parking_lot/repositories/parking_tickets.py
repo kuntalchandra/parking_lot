@@ -160,3 +160,85 @@ class ParkingTicketRepository:
             total_cost=row["total_cost"],
             state=TicketState(row["state"]),
         )
+
+    def get_for_parking_lot(
+        self,
+        parking_lot_id: int,
+        ticket_id: int,
+    ) -> ParkingTicket | None:
+        row = self.connection.execute(
+            """
+            SELECT
+                ticket.id,
+                ticket.parking_lot_id,
+                ticket.parking_space_id,
+                space.space_number,
+                space.size AS space_size,
+                ticket.registration_number,
+                ticket.parked_at,
+                ticket.exited_at,
+                ticket.billed_hours,
+                ticket.hourly_rate,
+                ticket.total_cost,
+                ticket.state
+            FROM parking_ticket AS ticket
+            JOIN parking_space AS space
+                ON space.id = ticket.parking_space_id
+               AND space.parking_lot_id =
+                   ticket.parking_lot_id
+            WHERE ticket.parking_lot_id = ?
+              AND ticket.id = ?
+            """,
+            (parking_lot_id, ticket_id),
+        ).fetchone()
+
+        return self._to_ticket(row) if row is not None else None
+
+    def list_for_parking_lot(
+        self,
+        parking_lot_id: int,
+        registration_number: str | None = None,
+        state: TicketState | None = None,
+    ) -> list[ParkingTicket]:
+        conditions = ["ticket.parking_lot_id = ?"]
+        parameters: list[object] = [parking_lot_id]
+
+        if registration_number is not None:
+            conditions.append(
+                "ticket.registration_number = ?"
+            )
+            parameters.append(registration_number)
+
+        if state is not None:
+            conditions.append("ticket.state = ?")
+            parameters.append(state.value)
+
+        where_clause = " AND ".join(conditions)
+
+        rows = self.connection.execute(
+            f"""
+            SELECT
+                ticket.id,
+                ticket.parking_lot_id,
+                ticket.parking_space_id,
+                space.space_number,
+                space.size AS space_size,
+                ticket.registration_number,
+                ticket.parked_at,
+                ticket.exited_at,
+                ticket.billed_hours,
+                ticket.hourly_rate,
+                ticket.total_cost,
+                ticket.state
+            FROM parking_ticket AS ticket
+            JOIN parking_space AS space
+                ON space.id = ticket.parking_space_id
+               AND space.parking_lot_id =
+                   ticket.parking_lot_id
+            WHERE {where_clause}
+            ORDER BY ticket.parked_at DESC, ticket.id DESC
+            """,
+            parameters,
+        ).fetchall()
+
+        return [self._to_ticket(row) for row in rows]
