@@ -278,8 +278,7 @@ Represents one physical parking space within a parking lot.
 
 The business reference for a space is:
 
-```text
-parking_lot_id + space_number
+`parking_lot_id + space_number`
 
 #### ParkingTicket
 
@@ -311,6 +310,7 @@ Represents a uniquely registered vehicle.
 | `size` | `VehicleSize` | Current value is `SMALL` |
 
 ## Relationship
+```text
 ParkingLot
     └── ParkingSpace
 
@@ -318,7 +318,7 @@ Vehicle
     └── ParkingTicket
             ├── ParkingLot
             └── ParkingSpace
-
+```
 ## Project Structure
 
 ```text
