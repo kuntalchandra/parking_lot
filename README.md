@@ -248,6 +248,77 @@ Tests cover:
 - REST contracts and error responses;
 - availability, occupancy and ticket queries.
 
+## Entities and Schemas
+
+### Domain entities
+
+#### ParkingLot
+
+Represents the complete parking facility.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `int` | Parking-lot identifier |
+| `name` | `str` | Parking-lot name |
+| `hourly_rate` | `int` | Fixed hourly rate in rupees |
+| `small_space_count` | `int` | Number of small spaces |
+| `medium_space_count` | `int` | Number of medium spaces |
+| `large_space_count` | `int` | Number of large spaces |
+
+#### ParkingSpace
+
+Represents one physical parking space within a parking lot.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `int` | Internal space identifier |
+| `parking_lot_id` | `int` | Owning parking lot |
+| `space_number` | `int` | Number representing proximity to the entrance |
+| `size` | `ParkingSpaceSize` | `SMALL`, `MEDIUM`, or `LARGE` |
+
+The business reference for a space is:
+
+```text
+parking_lot_id + space_number
+
+#### ParkingTicket
+
+Represents one vehicle-parking session and its lifecycle.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `int` | Ticket identifier |
+| `parking_lot_id` | `int` | Parking lot used |
+| `parking_space_id` | `int` | Internal allocated-space identifier |
+| `space_number` | `int` | Allocated space number |
+| `space_size` | `ParkingSpaceSize` | Allocated space size |
+| `registration_number` | `str` | Normalised vehicle registration number |
+| `parked_at` | `datetime` | Parking start time |
+| `exited_at` | `datetime \| None` | Exit time |
+| `billed_hours` | `int \| None` | Final billed duration |
+| `hourly_rate` | `int` | Rate captured when parking started |
+| `total_cost` | `int \| None` | Final cost in rupees |
+| `state` | `TicketState` | `PARKED` or `EXITED` |
+
+#### Vehicle
+
+Represents a uniquely registered vehicle.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `int` | Internal vehicle identifier |
+| `registration_number` | `str` | Unique normalised registration number |
+| `size` | `VehicleSize` | Current value is `SMALL` |
+
+## Relationship
+ParkingLot
+    └── ParkingSpace
+
+Vehicle
+    └── ParkingTicket
+            ├── ParkingLot
+            └── ParkingSpace
+
 ## Project Structure
 
 ```text
